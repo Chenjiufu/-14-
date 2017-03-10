@@ -1,13 +1,16 @@
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+var path = require('path');
 module.exports = {
     entry: {
-        "entry": "./entry"
+        "entry": path.resolve(__dirname, 'entry')
     },
     output: {
-        path: "build",
-        filename: 'js/[chunkhash:8].[name].min.js',
-        chunkFilename: 'js/[chunkhash:8].build.min.js',
-        publicPath: ''
+        path: path.resolve(__dirname, 'build'),
+        filename: 'js/[chunkhash:8].[name].min.js'
     },
+    plugins: [
+        new HtmlWebpackPlugin()
+    ],
     module: {
         loaders: [{
             test: /\.js/,
@@ -16,7 +19,24 @@ module.exports = {
         },
             {
                 test: /\.css$/,
-                loader: 'style-loader!css-loader',
+                use: [
+                    {
+                        loader: 'style-loader'
+                    },
+                    {
+                        loader: 'css-loader'
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: function () {
+                                return [
+                                    require("autoprefixer")
+                                ]
+                            }
+                        }
+                    }
+                ],
             },
             {
                 test: /\.sass/,
@@ -28,7 +48,27 @@ module.exports = {
             },
             {
                 test: /\.less/,
-                loader: 'style-loader!css-loader!less-loader',
+                use: [
+                    {
+                        loader: 'style-loader'
+                    },
+                    {
+                        loader: 'css-loader'
+                    },
+                    {
+                        loader: 'less-loader'
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            plugins: function () {
+                                return [
+                                    require("autoprefixer")
+                                ]
+                            }
+                        }
+                    }],
+//                loader: 'style-loader!css-loader!postcss-loader!less-loader',
                 exclude: /node_modules/
             },
             {
@@ -43,6 +83,10 @@ module.exports = {
                 test: /\.(mp4|ogg|svg)$/,
                 loader: 'file-loader'
             }
+
         ]
-    }
+    },
+//    postcss: [autoprefixer()]
+
+
 }
